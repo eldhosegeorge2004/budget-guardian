@@ -1,0 +1,3 @@
+@echo off
+echo Starting Budget Guardian Streamlit Dashboard on http://localhost:8501 ...
+python -m streamlit run frontend\app.py

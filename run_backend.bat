@@ -1,0 +1,3 @@
+@echo off
+echo Starting Budget Guardian FastAPI Backend on http://localhost:8000 ...
+python -m uvicorn backend.main:app --reload --port 8000
