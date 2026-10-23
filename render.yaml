@@ -1,0 +1,46 @@
+services:
+  # ──────────────────────────────────────────
+  # 1. FastAPI Backend API
+  # ──────────────────────────────────────────
+  - type: web
+    name: budget-guardian-api
+    runtime: python
+    plan: free
+    region: oregon
+    buildCommand: "pip install -r requirements.txt && python -m backend.seed_demo_data"
+    startCommand: "uvicorn backend.main:app --host 0.0.0.0 --port $PORT"
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.11
+      - key: DATABASE_URL
+        value: sqlite:///./budget_guardian.db
+      - key: PAYPAL_CLIENT_ID
+        sync: false
+      - key: PAYPAL_CLIENT_SECRET
+        sync: false
+      - key: PAYPAL_BASE_URL
+        value: https://api-m.sandbox.paypal.com
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+
+  # ──────────────────────────────────────────
+  # 2. Streamlit Dashboard Frontend
+  # ──────────────────────────────────────────
+  - type: web
+    name: budget-guardian-dashboard
+    runtime: python
+    plan: free
+    region: oregon
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "streamlit run frontend/app.py --server.port $PORT --server.address 0.0.0.0 --server.headless true"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.11
+      - key: API_BASE
+        fromService:
+          type: web
+          name: budget-guardian-api
+          property: host

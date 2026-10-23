@@ -98,6 +98,25 @@ Open [http://localhost:8501](http://localhost:8501) in your browser.
 
 ---
 
+## ☁️ Deploy to Render (Official Hackathon Sponsor)
+
+Budget Guardian is configured for 1-click deployment on [Render](https://render.com) via Blueprint (`render.yaml`):
+
+1. Push your repository to GitHub.
+2. Go to your [Render Dashboard](https://dashboard.render.com/) and click **New +** $\rightarrow$ **Blueprint**.
+3. Connect your GitHub repository. Render reads `render.yaml` and sets up:
+   - `budget-guardian-api` (FastAPI backend service)
+   - `budget-guardian-dashboard` (Streamlit frontend service)
+4. Add your optional `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`, and `GEMINI_API_KEY` in the Render environment variables tab.
+5. Click **Apply** — Render automatically builds, seeds sample data, links the frontend to the backend, and provisions public HTTPS URLs!
+
+*Alternatively, deploy as a single service using the command:*
+```bash
+python run_unified.py
+```
+
+---
+
 ## 📁 Project Structure
 
 ```

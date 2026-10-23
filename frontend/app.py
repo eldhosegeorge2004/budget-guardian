@@ -7,13 +7,18 @@ import streamlit as st
 import requests
 import pandas as pd
 import plotly.express as px
+import os
 import plotly.graph_objects as go
 from datetime import datetime
 
 # ──────────────────────────────────────────
 # Config
 # ──────────────────────────────────────────
-API_BASE = "http://localhost:8000"
+DEFAULT_API_BASE = os.getenv("API_BASE", "http://localhost:8000").rstrip("/")
+if "api_base" not in st.session_state:
+    st.session_state.api_base = DEFAULT_API_BASE
+
+API_BASE = st.session_state.api_base
 
 st.set_page_config(
     page_title="Budget Guardian 🛡️",
@@ -459,6 +464,14 @@ elif page == "🎮 Sandbox Simulator":
 elif page == "⚙️ Settings":
     st.title("⚙️ Settings")
 
+    st.subheader("🌐 Backend API Connection")
+    current_api = st.text_input("Backend API URL", value=st.session_state.api_base)
+    if st.button("Save & Reconnect API"):
+        st.session_state.api_base = current_api.rstrip("/")
+        st.success(f"Connected to API: {st.session_state.api_base}")
+        st.rerun()
+
+    st.divider()
     st.subheader("🔗 API Status")
     health = api_get("/health")
     paypal = api_get("/paypal/auth-check")
