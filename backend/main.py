@@ -104,11 +104,14 @@ def health():
 @app.get("/paypal/auth-check")
 def paypal_auth_check():
     """Verify PayPal credentials are working."""
+    from backend.paypal.auth import is_paypal_configured
+    if not is_paypal_configured():
+        return {"status": "demo_mode", "message": "PayPal credentials not configured. Operating with seeded sandbox demo data."}
     try:
         token = get_access_token()
         return {"status": "connected", "token_preview": token[:20] + "..."}
     except Exception as e:
-        raise HTTPException(status_code=401, detail=f"PayPal auth failed: {str(e)}")
+        return {"status": "disconnected", "error": str(e)}
 
 
 # ──────────────────────────────────────────

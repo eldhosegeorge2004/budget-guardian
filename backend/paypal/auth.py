@@ -5,8 +5,21 @@ from backend.config import PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PAYPAL_BASE_U
 _token_cache = {"access_token": None, "expires_at": 0}
 
 
+def is_paypal_configured() -> bool:
+    """Check if valid PayPal credentials have been provided."""
+    return bool(
+        PAYPAL_CLIENT_ID
+        and PAYPAL_CLIENT_SECRET
+        and PAYPAL_CLIENT_ID != "your_sandbox_client_id_here"
+        and PAYPAL_CLIENT_SECRET != "your_sandbox_client_secret_here"
+    )
+
+
 def get_access_token() -> str:
     """Fetch (or return cached) PayPal OAuth2 access token."""
+    if not is_paypal_configured():
+        raise RuntimeError("PayPal credentials are not configured. Running in Demo/Sandbox mode.")
+
     now = time.time()
     if _token_cache["access_token"] and now < _token_cache["expires_at"] - 30:
         return _token_cache["access_token"]

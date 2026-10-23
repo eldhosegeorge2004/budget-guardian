@@ -15,6 +15,7 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 
 from backend.database import SessionLocal, TransactionDB, PolicyDB, AlertDB
+from backend.paypal.auth import is_paypal_configured
 from backend.paypal.transactions import fetch_transactions
 from backend.agent.anomaly import (
     compute_merchant_baselines,
@@ -31,10 +32,14 @@ logging.basicConfig(level=logging.INFO)
 
 def sync_transactions(db: Session, days_back: int = 30) -> int:
     """Fetch PayPal transactions and store new ones in DB. Returns count of new txns."""
+    if not is_paypal_configured():
+        logger.info("ℹ️ PayPal API credentials not set — using local demo transaction store.")
+        return 0
+
     try:
         transactions = fetch_transactions(days_back=days_back)
     except Exception as e:
-        logger.error(f"Failed to fetch PayPal transactions: {e}")
+        logger.warning(f"Could not reach PayPal sandbox API: {e}")
         return 0
 
     new_count = 0
